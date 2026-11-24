@@ -1,0 +1,149 @@
+{
+  "entities": {
+    "Wallet": {
+      "title": "Wallet",
+      "description": "User financial wallet or bank account synced across devices",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID of the owner" },
+        "name": { "type": "string", "description": "Wallet display name (e.g. BCA, GoPay)" },
+        "walletType": { "type": "string", "description": "Wallet category: Bank, E-Wallet, Cash" },
+        "balance": { "type": "integer", "description": "Current balance in Rupiah" },
+        "accentHex": { "type": "integer", "description": "ARGB color integer for wallet card accent" },
+        "accountNumberHint": { "type": "string", "description": "Masked account hint or label" },
+        "clientUpdatedAt": { "type": "integer", "description": "Client epoch milliseconds for Last-Write-Wins sync" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["userId", "name", "walletType", "balance", "accentHex", "accountNumberHint", "clientUpdatedAt", "createdAt", "updatedAt"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Personal income, expense, or inter-wallet transfer record",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID of the owner" },
+        "merchant": { "type": "string", "description": "Merchant or transaction title" },
+        "amount": { "type": "integer", "description": "Positive Rupiah amount" },
+        "type": { "type": "string", "enum": ["EXPENSE", "INCOME", "TRANSFER"], "description": "Transaction type" },
+        "category": { "type": "string", "description": "Category name" },
+        "walletSyncId": { "type": "string", "description": "UUID syncId of the source wallet" },
+        "targetWalletSyncId": { "type": "string", "description": "Optional UUID syncId of destination wallet for transfers" },
+        "note": { "type": "string", "description": "Optional user note" },
+        "timestamp": { "type": "integer", "description": "Transaction occurrence epoch milliseconds" },
+        "isAiGenerated": { "type": "boolean", "description": "Whether parsed via Gemini AI" },
+        "recurringRuleSyncId": { "type": "string", "description": "Optional UUID syncId of source recurring rule" },
+        "clientUpdatedAt": { "type": "integer", "description": "Client epoch milliseconds for Last-Write-Wins sync" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["userId", "merchant", "amount", "type", "category", "walletSyncId", "note", "timestamp", "isAiGenerated", "clientUpdatedAt", "createdAt", "updatedAt"]
+    },
+    "Budget": {
+      "title": "Budget",
+      "description": "Monthly spending limit for a category",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID of the owner" },
+        "category": { "type": "string", "description": "Expense category name" },
+        "monthlyLimit": { "type": "integer", "description": "Monthly limit in Rupiah" },
+        "monthKey": { "type": "string", "description": "Year-month key in yyyy-MM format" },
+        "clientUpdatedAt": { "type": "integer", "description": "Client epoch milliseconds for Last-Write-Wins sync" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["userId", "category", "monthlyLimit", "monthKey", "clientUpdatedAt", "createdAt", "updatedAt"]
+    },
+    "RecurringTransaction": {
+      "title": "RecurringTransaction",
+      "description": "Scheduled recurring transaction rule",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID of the owner" },
+        "merchant": { "type": "string", "description": "Merchant or rule title" },
+        "amount": { "type": "integer", "description": "Positive Rupiah amount" },
+        "type": { "type": "string", "enum": ["EXPENSE", "INCOME"], "description": "Transaction type" },
+        "category": { "type": "string", "description": "Category name" },
+        "walletSyncId": { "type": "string", "description": "UUID syncId of wallet" },
+        "note": { "type": "string", "description": "Rule note" },
+        "frequency": { "type": "string", "enum": ["DAILY", "WEEKLY", "MONTHLY", "YEARLY"], "description": "Recurrence pattern" },
+        "startDate": { "type": "integer", "description": "Start epoch milliseconds" },
+        "endDate": { "type": "integer", "description": "Optional end epoch milliseconds" },
+        "nextDueDate": { "type": "integer", "description": "Next scheduled epoch milliseconds" },
+        "lastProcessedDate": { "type": "integer", "description": "Optional last generated epoch milliseconds" },
+        "isActive": { "type": "boolean", "description": "Whether schedule is active" },
+        "clientUpdatedAt": { "type": "integer", "description": "Client epoch milliseconds for Last-Write-Wins sync" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["userId", "merchant", "amount", "type", "category", "walletSyncId", "note", "frequency", "startDate", "nextDueDate", "isActive", "clientUpdatedAt", "createdAt", "updatedAt"]
+    },
+    "SavingsGoal": {
+      "title": "SavingsGoal",
+      "description": "User savings goal synchronized across devices",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID of the owner" },
+        "title": { "type": "string", "description": "Goal title" },
+        "targetAmount": { "type": "integer", "description": "Target Rupiah amount" },
+        "savedAmount": { "type": "integer", "description": "Saved Rupiah amount" },
+        "deadlineMillis": { "type": "integer", "description": "Optional target deadline epoch milliseconds" },
+        "accentHex": { "type": "integer", "description": "ARGB color integer" },
+        "iconName": { "type": "string", "description": "Goal icon identifier" },
+        "note": { "type": "string", "description": "Optional note" },
+        "completed": { "type": "boolean", "description": "Whether goal target is reached" },
+        "clientUpdatedAt": { "type": "integer", "description": "Client epoch milliseconds" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp" }
+      },
+      "required": ["userId", "title", "targetAmount", "savedAmount", "accentHex", "iconName", "note", "completed", "clientUpdatedAt", "createdAt", "updatedAt"]
+    },
+    "DebtRecord": {
+      "title": "DebtRecord",
+      "description": "Debt or receivable record synchronized across devices",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID of the owner" },
+        "personName": { "type": "string", "description": "Counterparty person or institution name" },
+        "amount": { "type": "integer", "description": "Total debt/receivable amount in Rupiah" },
+        "paidAmount": { "type": "integer", "description": "Amount paid/repaid so far" },
+        "direction": { "type": "string", "enum": ["LEND", "BORROW"], "description": "LEND (Piutang) or BORROW (Hutang)" },
+        "walletSyncId": { "type": "string", "description": "Optional wallet syncId" },
+        "dueDateMillis": { "type": "integer", "description": "Optional due date epoch milliseconds" },
+        "note": { "type": "string", "description": "Optional note" },
+        "settled": { "type": "boolean", "description": "Whether fully settled" },
+        "createdAtMillis": { "type": "integer", "description": "Client creation epoch milliseconds" },
+        "clientUpdatedAt": { "type": "integer", "description": "Client epoch milliseconds" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp" }
+      },
+      "required": ["userId", "personName", "amount", "paidAmount", "direction", "note", "settled", "createdAtMillis", "clientUpdatedAt", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/wallets/{walletId}": {
+      "schema": { "$ref": "#/entities/Wallet" },
+      "description": "User-scoped wallets synchronized with Room"
+    },
+    "/users/{userId}/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/Transaction" },
+      "description": "User-scoped transactions synchronized with Room"
+    },
+    "/users/{userId}/budgets/{budgetId}": {
+      "schema": { "$ref": "#/entities/Budget" },
+      "description": "User-scoped monthly category budgets synchronized with Room"
+    },
+    "/users/{userId}/recurring_transactions/{ruleId}": {
+      "schema": { "$ref": "#/entities/RecurringTransaction" },
+      "description": "User-scoped recurring rules synchronized with Room"
+    },
+    "/users/{userId}/savings_goals/{goalId}": {
+      "schema": { "$ref": "#/entities/SavingsGoal" },
+      "description": "User-scoped savings goals synchronized with Room"
+    },
+    "/users/{userId}/debts/{debtId}": {
+      "schema": { "$ref": "#/entities/DebtRecord" },
+      "description": "User-scoped debts and receivables synchronized with Room"
+    }
+  }
+}

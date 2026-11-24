@@ -1,0 +1,191 @@
+---
+name: Obsidian Luxury Minimalist
+colors:
+  surface: '#faf9f7'
+  surface-dim: '#dadad8'
+  surface-bright: '#faf9f7'
+  surface-container-lowest: '#ffffff'
+  surface-container-low: '#f4f3f1'
+  surface-container: '#efeeec'
+  surface-container-high: '#e9e8e6'
+  surface-container-highest: '#e3e2e0'
+  on-surface: '#1a1c1b'
+  on-surface-variant: '#444748'
+  inverse-surface: '#2f3130'
+  inverse-on-surface: '#f1f1ef'
+  outline: '#747878'
+  outline-variant: '#c4c7c7'
+  surface-tint: '#5f5e5e'
+  primary: '#000000'
+  on-primary: '#ffffff'
+  primary-container: '#1c1b1b'
+  on-primary-container: '#858383'
+  inverse-primary: '#c8c6c5'
+  secondary: '#5d5e66'
+  on-secondary: '#ffffff'
+  secondary-container: '#e3e1ec'
+  on-secondary-container: '#63646c'
+  tertiary: '#000000'
+  on-tertiary: '#ffffff'
+  tertiary-container: '#1c1b1a'
+  on-tertiary-container: '#868382'
+  error: '#ba1a1a'
+  on-error: '#ffffff'
+  error-container: '#ffdad6'
+  on-error-container: '#93000a'
+  primary-fixed: '#e5e2e1'
+  primary-fixed-dim: '#c8c6c5'
+  on-primary-fixed: '#1c1b1b'
+  on-primary-fixed-variant: '#474746'
+  secondary-fixed: '#e3e1ec'
+  secondary-fixed-dim: '#c6c5cf'
+  on-secondary-fixed: '#1a1b22'
+  on-secondary-fixed-variant: '#46464e'
+  tertiary-fixed: '#e6e2df'
+  tertiary-fixed-dim: '#cac6c4'
+  on-tertiary-fixed: '#1c1b1a'
+  on-tertiary-fixed-variant: '#484645'
+  background: '#faf9f7'
+  on-background: '#1a1c1b'
+  surface-variant: '#e3e2e0'
+typography:
+  display-hero:
+    fontFamily: Manrope
+    fontSize: 36px
+    fontWeight: '700'
+    lineHeight: 44px
+    letterSpacing: -0.03em
+  display-hero-mobile:
+    fontFamily: Manrope
+    fontSize: 28px
+    fontWeight: '700'
+    lineHeight: 36px
+    letterSpacing: -0.02em
+  headline-lg:
+    fontFamily: Manrope
+    fontSize: 22px
+    fontWeight: '600'
+    lineHeight: 28px
+    letterSpacing: -0.01em
+  headline-sm:
+    fontFamily: Manrope
+    fontSize: 18px
+    fontWeight: '600'
+    lineHeight: 24px
+    letterSpacing: -0.01em
+  body-lg:
+    fontFamily: Hanken Grotesk
+    fontSize: 16px
+    fontWeight: '500'
+    lineHeight: 22px
+  body-md:
+    fontFamily: Hanken Grotesk
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
+  body-sm:
+    fontFamily: Hanken Grotesk
+    fontSize: 12px
+    fontWeight: '400'
+    lineHeight: 16px
+  label-md:
+    fontFamily: Hanken Grotesk
+    fontSize: 13px
+    fontWeight: '600'
+    lineHeight: 18px
+    letterSpacing: 0.01em
+  label-sm:
+    fontFamily: Hanken Grotesk
+    fontSize: 11px
+    fontWeight: '600'
+    lineHeight: 14px
+    letterSpacing: 0.04em
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  gutter: 1rem
+  gutter-sm: 0.75rem
+  margin: 1.25rem
+  margin-lg: 2rem
+  space-xs: 0.25rem
+  space-sm: 0.5rem
+  space-md: 1rem
+  space-lg: 1.5rem
+  space-xl: 2rem
+---
+
+## Brand & Style
+
+This design system articulates an ultra-clean, architectural luxury minimalist aesthetic tailored for private wealth management, boutique banking, and elevated fintech experiences. Grounded in quiet confidence and restraint, it rejects visual clutter, garish gradients, and unnecessary embellishments in favor of deliberate proportions, meticulous typographic hierarchy, and tactile micro-contrasts.
+
+The visual language establishes high-contrast focal points by placing deep obsidian surfaces against a warm, luminous parchment canvas. The user experience evokes feelings of security, effortless precision, and executive sophistication.
+
+## Colors
+
+The palette is constructed around precise tonal equilibrium rather than arbitrary saturation:
+
+- **Primary (`#1A1A1A`)**: A deep pitch obsidian used for hero financial cards, dominant typography, and solid active pills. It provides maximum legibility and anchoring weight.
+- **Secondary (`#71717A`)**: A balanced graphite gray that governs secondary metadata, timestamps, card labels, and subtle iconography.
+- **Neutral Canvas (`#F9F8F6`)**: A tailored warm off-white surface that mitigates optical fatigue, imbuing the interface with an editorial, premium paper quality.
+- **Surface Contrast Tier**: Crisp pure white (`#FFFFFF`) containers float softly over the neutral canvas, giving structural definition to primary quick-actions, modal overlays, and transaction rows.
+
+## Typography
+
+Typography establishes an architectural rhythm through the pairing of **Manrope** for authoritative structural headers and numerical account metrics, and **Hanken Grotesk** for clean, effortless legibility across transaction lists, captions, and micro-labels.
+
+- Numeric totals and balance headers use tighter tracking (`-0.02em` to `-0.03em`) to deliver an executive, sculpted visual signature.
+- Metadata and category paths leverage uppercase or sentence-cased Hanken Grotesk at lower opacities (60% to 70%) to preserve high-contrast focal points.
+
+## Layout & Spacing
+
+Layouts follow a cohesive grid hierarchy optimized for mobile-first viewport constraints and desktop dashboard scaling:
+
+- **Mobile Viewports**: Uses a strict 1.25rem (`margin`) boundary on lateral screen edges, with 0.75rem to 1rem gaps between card modules and quick-action stacks.
+- **Vertical Cadence**: Generous spacing intervals (`space-lg` to `space-xl`) between content chapters (e.g., Wallet Cards, Quick Action row, Recent Transactions) avoid visual density traps common in data-heavy financial apps.
+- **Reflow**: Quick-action pills span a 3-column equal-width flex distribution on mobile, expanding to fixed 140px width modules within larger tablet and desktop grid gutters.
+
+## Elevation & Depth
+
+Visual hierarchy uses a refined hybrid approach blending soft ambient shadows with tonal surface layering:
+
+- **Ambient Shadows**: Pure white containers resting on the creamy neutral canvas use ultra-diffused, dual-layer shadows (`0 8px 24px -4px rgba(26, 26, 26, 0.04), 0 2px 6px -1px rgba(26, 26, 26, 0.02)`).
+- **Obsidian Physicality**: Obsidian payment cards receive a deep, grounded presence via a directional drop shadow (`0 20px 32px -8px rgba(0, 0, 0, 0.18)`), combined with a delicate 1px inset top border (`rgba(255, 255, 255, 0.12)`) simulating high-end cardstock edge-bevels.
+- **Floating Island Navigation**: Suspends above content via an isolated elevation plane (`0 12px 36px -4px rgba(26, 26, 26, 0.08)`) and high-performance backdrop blur (`backdrop-filter: blur(16px)`).
+
+## Shapes
+
+The interface balances generous architectural roundedness with pure pill actions:
+
+- **Base Radius (`0.5rem`)**: Applied to micro elements, utility badges, and small status indicators.
+- **Card and Surface Radius (`rounded-xl` / `1.5rem` to `1.25rem`)**: Enforces fluid, rounded ergonomics on credit cards, quick-action cards, and dialog sheets.
+- **Complete Pills (`rounded-full` / `9999px`)**: Reserved strictly for high-priority interactive components—including the floating bottom navigation capsule, circular action icons, and active state pill markers.
+
+## Components
+
+### Payment & Wallet Cards
+- **Structure**: Obsidian (`#1A1A1A`) background with subtle linear sheen gradients (`linear-gradient(135deg, #242424 0%, #141414 100%)`).
+- **Typography & Details**: Crisp pure white balance figures; tertiary cardholder details rendered in 60% opacity white. Subtle branded corner logos (e.g., VISA, Mastercard) in monochrome flat white.
+
+### Action Pills (Send, Request, Add Funds)
+- **Container**: White elevated cards with `1.25rem` corners and vertical stacking.
+- **Icon Container**: Solid pitch-black circle (`40px × 40px`) centered with a white monochrome vector glyph (such as diagonal directional arrows).
+- **Label**: Bold, concise `body-md` typography beneath the icon.
+
+### Transaction Row Lists
+- **Structure**: Borderless list items placed directly on the canvas or encapsulated within white floating surfaces.
+- **Leading Element**: Soft circular or squircle icon badge (`44px × 44px`) filled with `#FFFFFF` or `#F0EFEA`, containing clean monochrome glyphs.
+- **Trailing Element**: Bold monetary amounts in Manrope with standard currency prefixes.
+
+### Floating Bottom Navigation Bar
+- **Island Capsule**: Floating horizontal pill detached from the bottom edge by `margin-lg`. Frosted pure white body (`rgba(255, 255, 255, 0.95)`).
+- **Active State Indicator**: Solid pitch-black pill or circle containing an inverted white icon, providing instantaneous tactile state differentiation.
+- **Inactive State**: Bare icon glyphs styled in neutral `#A1A1AA` with smooth opacity transitions on press.
+
+### Inputs & Controls
+- **Form Fields**: Warm off-white or white fill with hairline borders (`1px solid #E5E4DE`), transitioning to a crisp `#1A1A1A` ring on active focus.
+- **Checkboxes & Radios**: Minimalist circular toggles adhering strictly to monochrome high contrast.

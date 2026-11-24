@@ -1,0 +1,236 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidTimestampsCreate(data) {
+      return data.createdAt is timestamp &&
+             data.createdAt <= request.time &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    function isValidTimestampsUpdate(data, prev) {
+      return data.createdAt == prev.createdAt &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    function isValidWallet(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 60 &&
+             data.walletType is string && data.walletType.size() >= 1 && data.walletType.size() <= 30 &&
+             data.balance is int &&
+             data.accentHex is int &&
+             data.accountNumberHint is string && data.accountNumberHint.size() <= 80 &&
+             data.clientUpdatedAt is int && data.clientUpdatedAt >= 0;
+    }
+
+    function isValidTransaction(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.merchant is string && data.merchant.size() >= 1 && data.merchant.size() <= 120 &&
+             data.amount is int && data.amount > 0 &&
+             data.type in ['EXPENSE', 'INCOME', 'TRANSFER'] &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 60 &&
+             data.walletSyncId is string && isValidId(data.walletSyncId) &&
+             (!('targetWalletSyncId' in data) || data.targetWalletSyncId == null || (data.targetWalletSyncId is string && isValidId(data.targetWalletSyncId))) &&
+             data.note is string && data.note.size() <= 500 &&
+             data.timestamp is int && data.timestamp > 0 &&
+             data.isAiGenerated is bool &&
+             (!('recurringRuleSyncId' in data) || data.recurringRuleSyncId == null || (data.recurringRuleSyncId is string && isValidId(data.recurringRuleSyncId))) &&
+             data.clientUpdatedAt is int && data.clientUpdatedAt >= 0;
+    }
+
+    function isValidBudget(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 60 &&
+             data.monthlyLimit is int && data.monthlyLimit > 0 &&
+             data.monthKey is string && data.monthKey.size() == 7 && data.monthKey.matches('^[0-9]{4}-[0-9]{2}$') &&
+             data.clientUpdatedAt is int && data.clientUpdatedAt >= 0;
+    }
+
+    function isValidRecurring(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.merchant is string && data.merchant.size() >= 1 && data.merchant.size() <= 120 &&
+             data.amount is int && data.amount > 0 &&
+             data.type in ['EXPENSE', 'INCOME'] &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 60 &&
+             data.walletSyncId is string && isValidId(data.walletSyncId) &&
+             data.note is string && data.note.size() <= 500 &&
+             data.frequency in ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'] &&
+             data.startDate is int && data.startDate > 0 &&
+             (!('endDate' in data) || data.endDate == null || data.endDate is int) &&
+             data.nextDueDate is int && data.nextDueDate > 0 &&
+             (!('lastProcessedDate' in data) || data.lastProcessedDate == null || data.lastProcessedDate is int) &&
+             data.isActive is bool &&
+             data.clientUpdatedAt is int && data.clientUpdatedAt >= 0;
+    }
+
+    function isValidSavingsGoal(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 100 &&
+             data.targetAmount is int && data.targetAmount > 0 &&
+             data.savedAmount is int && data.savedAmount >= 0 &&
+             (!('deadlineMillis' in data) || data.deadlineMillis == null || data.deadlineMillis is int) &&
+             data.accentHex is int &&
+             data.iconName is string && data.iconName.size() >= 1 && data.iconName.size() <= 30 &&
+             data.note is string && data.note.size() <= 500 &&
+             data.completed is bool &&
+             data.clientUpdatedAt is int && data.clientUpdatedAt >= 0;
+    }
+
+    function isValidDebt(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.personName is string && data.personName.size() >= 1 && data.personName.size() <= 100 &&
+             data.amount is int && data.amount > 0 &&
+             data.paidAmount is int && data.paidAmount >= 0 && data.paidAmount <= data.amount &&
+             data.direction in ['LEND', 'BORROW'] &&
+             (!('walletSyncId' in data) || data.walletSyncId == null || (data.walletSyncId is string && isValidId(data.walletSyncId))) &&
+             (!('dueDateMillis' in data) || data.dueDateMillis == null || data.dueDateMillis is int) &&
+             data.note is string && data.note.size() <= 500 &&
+             data.settled is bool &&
+             data.createdAtMillis is int && data.createdAtMillis >= 0 &&
+             data.clientUpdatedAt is int && data.clientUpdatedAt >= 0;
+    }
+
+    match /users/{userId} {
+      match /wallets/{walletId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(walletId);
+        allow create: if isOwner(userId) &&
+                         isValidId(walletId) &&
+                         incoming().keys().hasAll(['userId', 'name', 'walletType', 'balance', 'accentHex', 'accountNumberHint', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'name', 'walletType', 'balance', 'accentHex', 'accountNumberHint', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         isValidTimestampsCreate(incoming()) &&
+                         isValidWallet(incoming(), userId);
+        allow update: if isOwner(userId) &&
+                         isValidId(walletId) &&
+                         isValidWallet(incoming(), userId) &&
+                         incoming().userId == existing().userId &&
+                         isValidTimestampsUpdate(incoming(), existing()) &&
+                         incoming().keys().hasOnly(['userId', 'name', 'walletType', 'balance', 'accentHex', 'accountNumberHint', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['name', 'walletType', 'balance', 'accentHex', 'accountNumberHint', 'clientUpdatedAt', 'updatedAt']);
+        allow delete: if isOwner(userId) && isValidId(walletId);
+      }
+
+      match /transactions/{transactionId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(transactionId);
+        allow create: if isOwner(userId) &&
+                         isValidId(transactionId) &&
+                         incoming().keys().hasAll(['userId', 'merchant', 'amount', 'type', 'category', 'walletSyncId', 'note', 'timestamp', 'isAiGenerated', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'merchant', 'amount', 'type', 'category', 'walletSyncId', 'targetWalletSyncId', 'note', 'timestamp', 'isAiGenerated', 'recurringRuleSyncId', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         isValidTimestampsCreate(incoming()) &&
+                         isValidTransaction(incoming(), userId);
+        allow update: if isOwner(userId) &&
+                         isValidId(transactionId) &&
+                         isValidTransaction(incoming(), userId) &&
+                         incoming().userId == existing().userId &&
+                         isValidTimestampsUpdate(incoming(), existing()) &&
+                         incoming().keys().hasOnly(['userId', 'merchant', 'amount', 'type', 'category', 'walletSyncId', 'targetWalletSyncId', 'note', 'timestamp', 'isAiGenerated', 'recurringRuleSyncId', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['merchant', 'amount', 'type', 'category', 'walletSyncId', 'targetWalletSyncId', 'note', 'timestamp', 'isAiGenerated', 'recurringRuleSyncId', 'clientUpdatedAt', 'updatedAt']);
+        allow delete: if isOwner(userId) && isValidId(transactionId);
+      }
+
+      match /budgets/{budgetId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(budgetId);
+        allow create: if isOwner(userId) &&
+                         isValidId(budgetId) &&
+                         incoming().keys().hasAll(['userId', 'category', 'monthlyLimit', 'monthKey', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'category', 'monthlyLimit', 'monthKey', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         isValidTimestampsCreate(incoming()) &&
+                         isValidBudget(incoming(), userId);
+        allow update: if isOwner(userId) &&
+                         isValidId(budgetId) &&
+                         isValidBudget(incoming(), userId) &&
+                         incoming().userId == existing().userId &&
+                         isValidTimestampsUpdate(incoming(), existing()) &&
+                         incoming().keys().hasOnly(['userId', 'category', 'monthlyLimit', 'monthKey', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['category', 'monthlyLimit', 'monthKey', 'clientUpdatedAt', 'updatedAt']);
+        allow delete: if isOwner(userId) && isValidId(budgetId);
+      }
+
+      match /recurring_transactions/{ruleId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(ruleId);
+        allow create: if isOwner(userId) &&
+                         isValidId(ruleId) &&
+                         incoming().keys().hasAll(['userId', 'merchant', 'amount', 'type', 'category', 'walletSyncId', 'note', 'frequency', 'startDate', 'nextDueDate', 'isActive', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'merchant', 'amount', 'type', 'category', 'walletSyncId', 'note', 'frequency', 'startDate', 'endDate', 'nextDueDate', 'lastProcessedDate', 'isActive', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         isValidTimestampsCreate(incoming()) &&
+                         isValidRecurring(incoming(), userId);
+        allow update: if isOwner(userId) &&
+                         isValidId(ruleId) &&
+                         isValidRecurring(incoming(), userId) &&
+                         incoming().userId == existing().userId &&
+                         isValidTimestampsUpdate(incoming(), existing()) &&
+                         incoming().keys().hasOnly(['userId', 'merchant', 'amount', 'type', 'category', 'walletSyncId', 'note', 'frequency', 'startDate', 'endDate', 'nextDueDate', 'lastProcessedDate', 'isActive', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['merchant', 'amount', 'type', 'category', 'walletSyncId', 'note', 'frequency', 'startDate', 'endDate', 'nextDueDate', 'lastProcessedDate', 'isActive', 'clientUpdatedAt', 'updatedAt']);
+        allow delete: if isOwner(userId) && isValidId(ruleId);
+      }
+
+      match /savings_goals/{goalId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(goalId);
+        allow create: if isOwner(userId) &&
+                         isValidId(goalId) &&
+                         incoming().keys().hasAll(['userId', 'title', 'targetAmount', 'savedAmount', 'accentHex', 'iconName', 'note', 'completed', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'title', 'targetAmount', 'savedAmount', 'deadlineMillis', 'accentHex', 'iconName', 'note', 'completed', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         isValidTimestampsCreate(incoming()) &&
+                         isValidSavingsGoal(incoming(), userId);
+        allow update: if isOwner(userId) &&
+                         isValidId(goalId) &&
+                         isValidSavingsGoal(incoming(), userId) &&
+                         incoming().userId == existing().userId &&
+                         isValidTimestampsUpdate(incoming(), existing()) &&
+                         incoming().keys().hasOnly(['userId', 'title', 'targetAmount', 'savedAmount', 'deadlineMillis', 'accentHex', 'iconName', 'note', 'completed', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['title', 'targetAmount', 'savedAmount', 'deadlineMillis', 'accentHex', 'iconName', 'note', 'completed', 'clientUpdatedAt', 'updatedAt']);
+        allow delete: if isOwner(userId) && isValidId(goalId);
+      }
+
+      match /debts/{debtId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(debtId);
+        allow create: if isOwner(userId) &&
+                         isValidId(debtId) &&
+                         incoming().keys().hasAll(['userId', 'personName', 'amount', 'paidAmount', 'direction', 'note', 'settled', 'createdAtMillis', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'personName', 'amount', 'paidAmount', 'direction', 'walletSyncId', 'dueDateMillis', 'note', 'settled', 'createdAtMillis', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         isValidTimestampsCreate(incoming()) &&
+                         isValidDebt(incoming(), userId);
+        allow update: if isOwner(userId) &&
+                         isValidId(debtId) &&
+                         isValidDebt(incoming(), userId) &&
+                         incoming().userId == existing().userId &&
+                         isValidTimestampsUpdate(incoming(), existing()) &&
+                         incoming().keys().hasOnly(['userId', 'personName', 'amount', 'paidAmount', 'direction', 'walletSyncId', 'dueDateMillis', 'note', 'settled', 'createdAtMillis', 'clientUpdatedAt', 'createdAt', 'updatedAt']) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['personName', 'amount', 'paidAmount', 'direction', 'walletSyncId', 'dueDateMillis', 'note', 'settled', 'createdAtMillis', 'clientUpdatedAt', 'updatedAt']);
+        allow delete: if isOwner(userId) && isValidId(debtId);
+      }
+    }
+  }
+}

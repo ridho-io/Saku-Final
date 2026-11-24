@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Saku</string>
+    <string name="saku_widget_balance_label">Saku • Saldo &amp; Arus Kas</string>
+    <string name="saku_widget_description">Pantau saldo, pemasukan &amp; pengeluaran Saku dengan aksi cepat</string>
+    <string name="saku_widget_quick_label">Saku • Catat Cepat</string>
+    <string name="saku_widget_quick_description">Catat transaksi 1-ketuk via Manual, AI, Suara, atau Scan Struk</string>
+    <string name="saku_widget_budget_label">Saku • Pantau Anggaran</string>
+    <string name="saku_widget_budget_description">Lacak pemakaian anggaran bulanan &amp; kategori teratas</string>
+    <string name="saku_widget_mini_label">Saku • Kartu Mini</string>
+    <string name="saku_widget_mini_description">Kartu Cobalt ringkas 2x2 untuk total saldo &amp; catat cepat</string>
+</resources>

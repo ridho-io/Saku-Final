@@ -1,0 +1,6 @@
+{
+  "name": "Saku",
+  "description": "Aplikasi pengelola keuangan pribadi offline-first dengan AI untuk mencatat transaksi teks, suara, dan scan struk dalam Rupiah.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
